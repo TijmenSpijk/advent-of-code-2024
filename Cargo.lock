@@ -23,6 +23,7 @@ version = "0.11.0"
 dependencies = [
  "chrono",
  "dhat",
+ "log",
  "pico-args",
  "tinyjson",
 ]
