@@ -4,7 +4,8 @@ pub fn part_one(input: &str) -> Option<u32> {
     let mut result = 0;
 
     for line in input.lines() {
-        if check_safety(line) {
+        let values: Vec<u32> = line.split_whitespace().map(|a| a.parse::<u32>().unwrap()).collect();
+        if check_safety(&values) {
             result += 1;
         }
     }
@@ -16,26 +17,39 @@ pub fn part_two(input: &str) -> Option<u32> {
     let mut result = 0;
 
     for line in input.lines() {
-        if check_safety(line) {
+        let values: Vec<u32> = line.split_whitespace().map(|a| a.parse::<u32>().unwrap()).collect();
+        if check_safety(&values) {
             result += 1;
+        } else {
+            for i in 0..(values.len()) {
+                let mut values_to_check = values.clone();
+                values_to_check.remove(i);
+                if check_safety(&values_to_check) {
+                    result += 1;
+                    break;
+                }
+            }
         }
     }
 
     Some(result)
 }
 
-fn check_safety(line: &str) -> bool {
-    let values = line.split_whitespace().map(|a| a.parse::<u32>().unwrap());
+fn check_safety(values: &Vec<u32>) -> bool {    
     let mut dup = values.clone();
-    dup.next();
-    let combo = values.zip(dup);
+
+    dup.reverse();
+    dup.pop();
+    dup.reverse();
+
+    let combo = values.iter().zip(dup);
 
     let increasing = combo.clone().fold(true, |a , b| {
-        a && b.0 > b.1
+        a && b.0 > &b.1
     });
 
     let decreasing = combo.clone().fold(true, |a , b| {
-        a && b.0 < b.1
+        a && b.0 < &b.1
     });
 
     let difference = combo.clone().fold(true, |a , b| {
