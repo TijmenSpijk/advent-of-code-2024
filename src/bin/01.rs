@@ -8,9 +8,9 @@ pub fn part_one(input: &str) -> Option<u32> {
     let mut right: Vec<u32> = Vec::new();
     
     for line in input.lines() {
-        let mut values = line.split_whitespace();
-        left.push(values.next().unwrap().parse::<u32>().unwrap());
-        right.push(values.next().unwrap().parse::<u32>().unwrap());
+        let mut values = line.split_whitespace().map(|a| a.parse::<u32>().unwrap());
+        left.push(values.next().unwrap());
+        right.push(values.next().unwrap());
     };
 
     left.sort();
@@ -28,9 +28,9 @@ pub fn part_two(input: &str) -> Option<u32> {
     let mut right: Vec<u32> = Vec::new();
     
     for line in input.lines() {
-        let mut values = line.split_whitespace();
-        left.push(values.next().unwrap().parse::<u32>().unwrap());
-        right.push(values.next().unwrap().parse::<u32>().unwrap());
+        let mut values = line.split_whitespace().map(|a| a.parse::<u32>().unwrap());
+        left.push(values.next().unwrap());
+        right.push(values.next().unwrap());
     };
 
     left.sort();

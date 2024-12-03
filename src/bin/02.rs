@@ -1,11 +1,61 @@
 advent_of_code::solution!(2);
 
 pub fn part_one(input: &str) -> Option<u32> {
-    None
+    let mut result = 0;
+
+    for line in input.lines() {
+        let values = line.split_whitespace().map(|a| a.parse::<u32>().unwrap());
+        let mut dup = values.clone();
+        dup.next();
+        let combo = values.zip(dup);
+
+        let increasing = combo.clone().fold(true, |a , b| {
+            a && b.0 > b.1
+        });
+    
+        let decreasing = combo.clone().fold(true, |a , b| {
+            a && b.0 < b.1
+        });
+    
+        let difference = combo.clone().fold(true, |a , b| {
+            a && b.0.abs_diff(b.1) <= 3
+        });
+
+        if (increasing || decreasing) && difference {
+            result += 1;
+        }
+    }
+
+    Some(result)
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    None
+    let mut result = 0;
+
+    for line in input.lines() {
+        let values = line.split_whitespace().map(|a| a.parse::<u32>().unwrap());
+        let mut dup = values.clone();
+        dup.next();
+        let combo = values.zip(dup);
+
+        let increasing = combo.clone().fold(true, |a , b| {
+            a && b.0 > b.1
+        });
+    
+        let decreasing = combo.clone().fold(true, |a , b| {
+            a && b.0 < b.1
+        });
+    
+        let difference = combo.clone().fold(true, |a , b| {
+            a && b.0.abs_diff(b.1) <= 3
+        });
+
+        if (increasing || decreasing) && difference {
+            result += 1;
+        }
+    }
+
+    Some(result)
 }
 
 #[cfg(test)]
