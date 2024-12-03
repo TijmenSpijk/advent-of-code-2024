@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 advent_of_code::solution!(1);
 
 pub fn part_one(input: &str) -> Option<u32> {
@@ -31,7 +33,27 @@ pub fn part_two(input: &str) -> Option<u32> {
         right.push(values.next().unwrap().parse::<u32>().unwrap());
     };
 
-    None
+    left.sort();
+
+    let mut count: HashMap<u32, u32> = HashMap::new();
+
+    for num in right {
+        match count.get(&num) {
+            None => count.insert(num, 1),
+            Some(v) => count.insert(num, v + 1)
+        };
+    };
+
+    let mut result: u32 = 0;
+
+    for num in left {
+        match count.get(&num) {
+            None => continue,
+            Some(v) => result = result + num * v
+        }
+    };
+
+    Some(result)
 }
 
 #[cfg(test)]
