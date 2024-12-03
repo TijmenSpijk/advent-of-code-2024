@@ -1,25 +1,36 @@
-use log::info;
-
 advent_of_code::solution!(1);
 
 pub fn part_one(input: &str) -> Option<u32> {
-    let lines = input.lines();
-    let mut result: u32 = 0;
-    for line in lines {
-        let values = line.split(' ');
-        let mut difference: i32 = 0;
-        let mut counter: i32 = 1;
-        for value in values {
-            println!("parsing {value}");
-            // difference = difference + counter * value.parse::<i32>().expect("error");
-            counter = counter * -1;
-        }
-        result = result + difference.abs() as u32;
+
+    let mut left: Vec<u32> = Vec::new();
+    let mut right: Vec<u32> = Vec::new();
+    
+    for line in input.lines() {
+        let mut values = line.split_whitespace();
+        left.push(values.next().unwrap().parse::<u32>().unwrap());
+        right.push(values.next().unwrap().parse::<u32>().unwrap());
     };
-    Some(result)
+
+    left.sort();
+    right.sort();
+
+    Some(
+        left.iter().zip(right).fold(0,|a:u32, b| {
+            a + b.0.abs_diff(b.1)
+        })
+    )
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
+    let mut left: Vec<u32> = Vec::new();
+    let mut right: Vec<u32> = Vec::new();
+    
+    for line in input.lines() {
+        let mut values = line.split_whitespace();
+        left.push(values.next().unwrap().parse::<u32>().unwrap());
+        right.push(values.next().unwrap().parse::<u32>().unwrap());
+    };
+
     None
 }
 
