@@ -9,7 +9,7 @@ pub fn part_one(input: &str) -> Option<u32> {
     for line in input.lines() {
         for (_, [a, b]) in regex.captures_iter(line).map(|c| c.extract()) {
             products.push((a.parse::<u32>().unwrap(), b.parse::<u32>().unwrap()));
-        }        
+        }      
     }
 
     Some(products.iter().fold(0, | mut a: u32, b | {
@@ -30,9 +30,8 @@ pub fn part_two(input: &str) -> Option<u32> {
     for (_, [a]) in regex_do.captures_iter(&instructions).map(|c| c.extract()) {
         for (_, [a, b]) in regex_mul.captures_iter(a).map(|c| c.extract()) {
             products.push((a.parse::<u32>().unwrap(), b.parse::<u32>().unwrap()));
-        }  
-    }  
-    
+        }
+    }    
 
     Some(products.iter().fold(0, | mut a: u32, b | {
         a += b.0 * b.1;
