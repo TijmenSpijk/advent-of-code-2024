@@ -89,7 +89,60 @@ fn find_xmas(grid: &Vec<Vec<char>>, x: i32, y: i32) -> u32 {
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    None
+    let mut grid: Vec<Vec<char>> = Vec::new();
+    for line in input.lines() {
+        grid.push(line.chars().collect());
+    }
+
+    let mut result = 0;
+
+    for y in 0..grid.len() {
+        for x in 0..grid[0].len() {
+            if grid[y][x] == 'A' {
+                result += find_mas(&grid, x as i32, y as i32);
+            }
+        }
+    }
+
+    Some(result)
+}
+
+fn find_mas(grid: &Vec<Vec<char>>, x: i32, y: i32) -> u32 {
+    let mut result: u32 = 0;
+
+    let mut vec_left: String = "".to_string();
+    let mut vec_right: String = "".to_string();
+
+    let up = (y-1) >= 0;
+    let right = (x+1) < grid.len() as i32;
+    let down = (y+1) < grid.len() as i32;
+    let left = (x-1) >= 0;
+
+    if up && left {
+        vec_left.push(grid[(y-1) as usize][(x-1) as usize]);
+    }
+
+    vec_left.push('A');
+
+    if down && right {
+        vec_left.push(grid[(y+1) as usize][(x+1) as usize]);
+    }
+
+    if up && right {
+        vec_right.push(grid[(y-1) as usize][(x+1) as usize]);
+    }
+
+    vec_right.push('A');
+
+    if down && left {
+        vec_right.push(grid[(y+1) as usize][(x-1) as usize]);
+    }
+
+    if (vec_left == "MAS" || vec_left == "SAM") && (vec_right == "MAS" || vec_right == "SAM") {
+        result += 1;
+    }
+
+    result
 }
 
 #[cfg(test)]
