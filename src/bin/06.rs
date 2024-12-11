@@ -98,6 +98,9 @@ fn move_guard(grid: Vec<Vec<char>>, pos: Pos, dir: Direction, mut path: HashSet<
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
+    // count crossings
+    // if you cross line where you have been and path is undisturbed
+    // end
     None
 }
 

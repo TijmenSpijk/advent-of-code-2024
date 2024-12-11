@@ -35,7 +35,7 @@ pub fn part_two(input: &str) -> Option<u32> {
     Some(result)
 }
 
-fn check_safety(values: &Vec<u32>) -> bool {    
+fn check_safety(values: &Vec<u32>) -> bool {
     let mut dup = values.clone();
 
     dup.reverse();
