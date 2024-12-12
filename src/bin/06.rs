@@ -134,8 +134,34 @@ pub fn part_two(input: &str) -> Option<u32> {
     Some(count)
 }
 
-fn check_loop(grid: &Vec<Vec<char>>, pos: Pos, dir: &Direction) -> bool {
-    false
+fn check_loop(grid: &Vec<Vec<char>>, pos: Pos, dir: &Direction, path: &mut HashSet<Pos>) -> bool {
+    let dir_values = dir.get_dir();
+    let newpos: Pos = Pos { x: pos.x + dir_values.dx, y: pos.y + dir_values.dy };
+
+    println!("{:?}", newpos);
+
+    match grid.get(newpos.y as usize) {
+        Some(line) => {
+            match line.get(newpos.x as usize) {
+                Some(char) => {
+                    match char {
+                        '.' => {
+                            check_loop(grid, newpos, dir, path)
+                        },
+                        '^' => {
+                            return true
+                        },
+                        '#' => {
+                            check_loop(grid, pos, &dir.turn(), path)
+                        },
+                        _ => panic!("Unkown Char Found")
+                    }
+                },
+                None => return false
+            }
+        },
+        None => return false
+    }
 }
 
 #[cfg(test)]
