@@ -45,8 +45,8 @@ impl Direction {
 pub fn part_one(input: &str) -> Option<u32> {
     let mut grid: Vec<Vec<char>> = Vec::new();
 
-    let mut pos: Pos = Pos {x: 0, y: 0};
-    let dir: Direction = Direction::Up( Dir {dx: 0, dy: -1});
+    let mut guard_pos: Pos = Pos {x: 0, y: 0};
+    let dir: Direction = Direction::Up(Dir {dx: 0, dy: -1});
     let mut path: HashSet<Pos> = HashSet::new();
 
     for line in input.lines() {
@@ -56,21 +56,21 @@ pub fn part_one(input: &str) -> Option<u32> {
     for y in 0..grid.len() {
         for x in 0..grid[0].len() {
             if grid[y][x] == '^' {
-                pos.x = x as i32;
-                pos.y = y as i32;
+                guard_pos.x = x as i32;
+                guard_pos.y = y as i32;
             }
         }
     }
 
-    path.insert(pos);
+    path.insert(guard_pos);
 
-    Some(move_guard(&grid, pos, &dir, &mut path).len() as u32)
+    Some(move_guard(&grid, guard_pos, &dir, &mut path).len() as u32)
 }
 
-fn move_guard(grid: &Vec<Vec<char>>, pos: Pos, dir: &Direction, path: &mut HashSet<Pos>) -> HashSet<Pos> {
+fn move_guard(grid: &Vec<Vec<char>>, guard_pos: Pos, dir: &Direction, path: &mut HashSet<Pos>) -> HashSet<Pos> {
 
     let dir_values = dir.get_dir();
-    let newpos: Pos = Pos { x: pos.x + dir_values.dx, y: pos.y + dir_values.dy };
+    let newpos: Pos = Pos { x: guard_pos.x + dir_values.dx, y: guard_pos.y + dir_values.dy };
 
     match grid.get(newpos.y as usize) {
         Some(line) => {
@@ -82,10 +82,11 @@ fn move_guard(grid: &Vec<Vec<char>>, pos: Pos, dir: &Direction, path: &mut HashS
                             move_guard(grid, newpos, dir, path)
                         },
                         '^' => {
+                            path.insert(newpos);
                             move_guard(grid, newpos, dir, path)
                         },
                         '#' => {
-                            move_guard(grid, pos, &dir.turn(), path)
+                            move_guard(grid, guard_pos, &dir.turn(), path)
                         },
                         _ => panic!("Unkown Char Found")
                     }
@@ -100,8 +101,8 @@ fn move_guard(grid: &Vec<Vec<char>>, pos: Pos, dir: &Direction, path: &mut HashS
 pub fn part_two(input: &str) -> Option<u32> {
     let mut grid: Vec<Vec<char>> = Vec::new();
 
-    let mut pos: Pos = Pos {x: 0, y: 0};
-    let dir: Direction = Direction::Up( Dir {dx: 0, dy: -1});
+    let mut guard_pos: Pos = Pos { x: 0, y: 0 };
+    let dir: Direction = Direction::Up(Dir {dx: 0, dy: -1});
     let mut path: HashSet<Pos> = HashSet::new();
 
     for line in input.lines() {
@@ -111,33 +112,33 @@ pub fn part_two(input: &str) -> Option<u32> {
     for y in 0..grid.len() {
         for x in 0..grid[0].len() {
             if grid[y][x] == '^' {
-                pos.x = x as i32;
-                pos.y = y as i32;
+                guard_pos = Pos {x: x as i32, y: y as i32};
             }
         }
     }
 
-    path.insert(pos);
-
-    path = move_guard(&grid, pos, &dir, &mut path);
+    path.insert(guard_pos);
+    path = move_guard(&grid, guard_pos, &dir, &mut path);
 
     let mut count: u32 = 0;
 
-    for pos in path {
-        grid[pos.y as usize][pos.x as usize] = '#';
-        let mut path: HashSet<Pos> = HashSet::new();
-        if check_loop(&grid, pos, &dir, &mut path) {
-            count += 1
+    for obst_pos in path {
+        if !(obst_pos == guard_pos) {
+            grid[obst_pos.y as usize][obst_pos.x as usize] = '#';
+            let mut new_path: HashSet<Pos> = HashSet::new();
+            if check_loop(&grid, guard_pos, &dir, &mut new_path) {
+                count += 1
+            }
+            grid[obst_pos.y as usize][obst_pos.x as usize] = '.';
         }
-        grid[pos.y as usize][pos.x as usize] = '.';
     }
 
     Some(count)
 }
 
-fn check_loop(grid: &Vec<Vec<char>>, pos: Pos, dir: &Direction, path: &mut HashSet<Pos>) -> bool {
+fn check_loop(grid: &Vec<Vec<char>>, guard_pos: Pos, dir: &Direction, path: &mut HashSet<Pos>) -> bool {
     let dir_values = dir.get_dir();
-    let newpos: Pos = Pos { x: pos.x + dir_values.dx, y: pos.y + dir_values.dy };
+    let newpos: Pos = Pos { x: guard_pos.x + dir_values.dx, y: guard_pos.y + dir_values.dy };
 
     match grid.get(newpos.y as usize) {
         Some(line) => {
@@ -153,13 +154,13 @@ fn check_loop(grid: &Vec<Vec<char>>, pos: Pos, dir: &Direction, path: &mut HashS
                             check_loop(grid, newpos, dir, path)
                         },
                         '#' => {
-                            let dir = &dir.turn();
-                            let dir_values = dir.get_dir();
-                            let next: Pos = Pos { x: pos.x + dir_values.dx, y: pos.y + dir_values.dy };
-                            if !path.insert(next) {
-                                return true
+                            let new_dir: Direction = dir.turn();
+                            let new_dir_values = dir.get_dir();
+                            let next: Pos = Pos { x: guard_pos.x + new_dir_values.dx, y: guard_pos.y + new_dir_values.dy };
+                            if path.contains(&next) {
+                                return true;
                             }
-                            check_loop(grid, pos, dir, path)
+                            check_loop(grid, guard_pos, &new_dir, path)
                         },
                         _ => panic!("Unkown Char Found")
                     }
