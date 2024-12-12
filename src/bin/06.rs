@@ -64,10 +64,10 @@ pub fn part_one(input: &str) -> Option<u32> {
 
     path.insert(pos);
 
-    Some(move_guard(grid, pos, dir, path))
+    Some(move_guard(&grid, pos, &dir, &mut path).len() as u32)
 }
 
-fn move_guard(grid: Vec<Vec<char>>, pos: Pos, dir: Direction, mut path: HashSet<Pos>) -> u32 {
+fn move_guard(grid: &Vec<Vec<char>>, pos: Pos, dir: &Direction, path: &mut HashSet<Pos>) -> HashSet<Pos> {
 
     let dir_values = dir.get_dir();
     let newpos: Pos = Pos { x: pos.x + dir_values.dx, y: pos.y + dir_values.dy };
@@ -85,23 +85,57 @@ fn move_guard(grid: Vec<Vec<char>>, pos: Pos, dir: Direction, mut path: HashSet<
                             move_guard(grid, newpos, dir, path)
                         },
                         '#' => {
-                            move_guard(grid, pos, dir.turn(), path)
+                            move_guard(grid, pos, &dir.turn(), path)
                         },
                         _ => panic!("Unkown Char Found")
                     }
                 },
-                None => return path.len() as u32
+                None => return path.clone()
             }
         },
-        None => return path.len() as u32
+        None => return path.clone()
     }
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    // count crossings
-    // if you cross line where you have been and path is undisturbed
-    // end
-    None
+    let mut grid: Vec<Vec<char>> = Vec::new();
+
+    let mut pos: Pos = Pos {x: 0, y: 0};
+    let dir: Direction = Direction::Up( Dir {dx: 0, dy: -1});
+    let mut path: HashSet<Pos> = HashSet::new();
+
+    for line in input.lines() {
+        grid.push(line.chars().collect());
+    }
+
+    for y in 0..grid.len() {
+        for x in 0..grid[0].len() {
+            if grid[y][x] == '^' {
+                pos.x = x as i32;
+                pos.y = y as i32;
+            }
+        }
+    }
+
+    path.insert(pos);
+
+    path = move_guard(&grid, pos, &dir, &mut path);
+
+    let mut count: u32 = 0;
+
+    for pos in path {
+        grid[pos.y as usize][pos.x as usize] = '#';
+        if check_loop(&grid, pos, &dir) {
+            count += 1
+        }
+        grid[pos.y as usize][pos.x as usize] = '.';
+    }
+
+    Some(count)
+}
+
+fn check_loop(grid: &Vec<Vec<char>>, pos: Pos, dir: &Direction) -> bool {
+    false
 }
 
 #[cfg(test)]
