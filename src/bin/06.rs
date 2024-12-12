@@ -125,7 +125,8 @@ pub fn part_two(input: &str) -> Option<u32> {
 
     for pos in path {
         grid[pos.y as usize][pos.x as usize] = '#';
-        if check_loop(&grid, pos, &dir) {
+        let mut path: HashSet<Pos> = HashSet::new();
+        if check_loop(&grid, pos, &dir, &mut path) {
             count += 1
         }
         grid[pos.y as usize][pos.x as usize] = '.';
@@ -138,21 +139,27 @@ fn check_loop(grid: &Vec<Vec<char>>, pos: Pos, dir: &Direction, path: &mut HashS
     let dir_values = dir.get_dir();
     let newpos: Pos = Pos { x: pos.x + dir_values.dx, y: pos.y + dir_values.dy };
 
-    println!("{:?}", newpos);
-
     match grid.get(newpos.y as usize) {
         Some(line) => {
             match line.get(newpos.x as usize) {
                 Some(char) => {
                     match char {
                         '.' => {
+                            path.insert(newpos);
                             check_loop(grid, newpos, dir, path)
                         },
                         '^' => {
-                            return true
+                            path.insert(newpos);
+                            check_loop(grid, newpos, dir, path)
                         },
                         '#' => {
-                            check_loop(grid, pos, &dir.turn(), path)
+                            let dir = &dir.turn();
+                            let dir_values = dir.get_dir();
+                            let next: Pos = Pos { x: pos.x + dir_values.dx, y: pos.y + dir_values.dy };
+                            if !path.insert(next) {
+                                return true
+                            }
+                            check_loop(grid, pos, dir, path)
                         },
                         _ => panic!("Unkown Char Found")
                     }
